@@ -1,7 +1,9 @@
 import processing.core.PApplet;
 import processing.serial.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static processing.core.PApplet.str;
 
@@ -21,17 +23,25 @@ class MainController {
   void setup() {  //  Will be called only once.
     //  Open the serial port that connects to the Arduino device.
     String[] serialPorts = Serial.list();
-    PApplet.println(prefix + "Found COM / serial ports: " + PApplet.join(serialPorts, ", "));
-    if (virtual_sigfox.serialPortIndex >= serialPorts.length) {
-      if (serialPorts.length == 0)
+    //  Exclude Bluetooth ports on Mac.
+    ArrayList<String> serialPortsFiltered = new ArrayList<>();
+    for (String port: serialPorts) {
+      if (port.toLowerCase().contains("bluetooth")) continue;
+      serialPortsFiltered.add(port);
+    }
+
+    PApplet.println(prefix + "Found COM / serial ports: ");
+    PApplet.printArray(serialPortsFiltered);
+    if (virtual_sigfox.serialPortIndex >= serialPortsFiltered.size()) {
+      if (serialPortsFiltered.size() == 0)
         PApplet.println("****Error: No COM / serial ports found. Check your Arduino USB connection");
       else if (virtual_sigfox.serialPortIndex > 0)
         PApplet.println("****Error: No COM / serial ports found at index " + str(virtual_sigfox.serialPortIndex) +
-            ". Edit unabiz_emulator.pde, change serialPortIndex to a number between 0 and " +
-            str(serialPorts.length - 1));
+            ". Edit virtual_sigfox.java, change serialPortIndex to a number between 0 and " +
+            str(serialPortsFiltered.size() - 1));
       applet.exit();
     }
-    String portName = Serial.list()[virtual_sigfox.serialPortIndex];
+    String portName = serialPortsFiltered.get(virtual_sigfox.serialPortIndex);
     PApplet.println(prefix + "Connecting to Arduino at port " + portName + "...");
     arduinoPort = new Serial(applet, portName, 9600);
     //  Upon connection, the Arduino will automatically restart the sketch.
