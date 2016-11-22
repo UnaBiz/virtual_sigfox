@@ -1,6 +1,7 @@
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
 import controlP5.Controller;
+import controlP5.ControllerView;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PFont;
@@ -122,19 +123,22 @@ class View {
       c.register(this);
       menu = applet.createGraphics(getWidth(), getHeight());
 
-      setView((pg, t) -> {
-        if (updateMenu) {
-          updateMenu();
+      setView(new ControllerView<SilderList>() {
+
+        public void display(PGraphics pg, SilderList t) {
+          if (updateMenu) {
+            updateMenu();
+          }
+          if (inside()) { // draw scrollbar
+            menu.beginDraw();
+            int len = -(itemHeight * items.size()) + getHeight();
+            int ty = (int) (applet.map(pos, len, 0, getHeight() - scrollerLength - 2, 2));
+            menu.fill(128);
+            menu.rect(getWidth() - 6, ty, 4, scrollerLength);
+            menu.endDraw();
+          }
+          pg.image(menu, 0, 0);
         }
-        if (inside()) { // draw scrollbar
-          menu.beginDraw();
-          int len = -(itemHeight * items.size()) + getHeight();
-          int ty = (int) (PApplet.map(pos, len, 0, getHeight() - scrollerLength - 2, 2));
-          menu.fill(128);
-          menu.rect(getWidth() - 6, ty, 4, scrollerLength);
-          menu.endDraw();
-        }
-        pg.image(menu, 0, 0);
       });
       updateMenu();
     }
