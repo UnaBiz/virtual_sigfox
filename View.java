@@ -1,8 +1,8 @@
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
 import controlP5.Controller;
-import controlP5.ControllerView;
 import processing.core.PApplet;
+import processing.core.PConstants;
 import processing.core.PFont;
 import processing.core.PGraphics;
 
@@ -11,18 +11,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class View {
+class View {
 
-  ControlP5 cp5;
+  private ControlP5 cp5;
 
-  PFont f1;
-  int NUM = 100;
-  float[] rotation = new float[NUM];
-  SilderList m = null;
-  PApplet applet = null;
+  private PFont f1;
+  private int NUM = 100;
+  private float[] rotation = new float[NUM];
+  private SilderList m = null;
+  private PApplet applet = null;
 
   View(PApplet applet0) {
     applet = applet0;
+  }
+
+  void settings() { //  Will be called only once.
+    applet.size(800, 400, PConstants.P3D);
   }
 
   void setup() {
@@ -44,8 +48,8 @@ public class View {
   // a convenience function to build a map that contains our key-value
   // pairs which we will then use to render each item of the SilderList.
   //
-  Map<String, Object> makeItem(String theLabel, float theValue, float theMin, float theMax) {
-    Map m = new HashMap<String, Object>();
+  private Map<String, Object> makeItem(String theLabel, float theValue, float theMin, float theMax) {
+    HashMap<String, Object> m = new HashMap<>();
     m.put("label", theLabel);
     m.put("sliderValue", theValue);
     m.put("sliderValueMin", theMin);
@@ -54,14 +58,14 @@ public class View {
   }
 
   void menu(int i) {
-    applet.println("got some slider-list event from item with index " + i);
+    PApplet.println("got some slider-list event from item with index " + i);
   }
 
   public void controlEvent(ControlEvent theEvent) {
     if (theEvent.isFrom("menu")) {
       int index = (int) theEvent.getValue();
       Map m = ((SilderList) theEvent.getController()).getItem(index);
-      applet.println("got a slider event from item : " + m);
+      PApplet.println("got a slider event from item : " + m);
       rotation[index] = f(m.get("sliderValue"));
     }
   }
@@ -74,7 +78,7 @@ public class View {
     applet.translate(applet.width / 2, 30);
     for (int i = 0; i < NUM; i++) {
       applet.pushMatrix();
-      applet.translate((i % 10) * 35, (int) ((i / 10) * 35));
+      applet.translate((i % 10) * 35, (i / 10) * 35);
       applet.rotate(rotation[i]);
       applet.rect(0, 0, 20, 20);
       applet.popMatrix();
@@ -82,9 +86,9 @@ public class View {
     applet.popMatrix();
   }
 
-  int ctr = 0;
+  private int ctr = 0;
 
-  public void addItem() {
+  void addItem() {
     m.addItem(makeItem(String.valueOf(ctr) + ": tmp", (float) (32.0 + (ctr / 2.0)), 30, 40 ));
     ctr++;
   }
@@ -109,7 +113,7 @@ public class View {
     int dragMode = 0;
     int dragIndex = -1;
 
-    List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+    List<Map<String, Object>> items = new ArrayList<>();
     PGraphics menu;
     boolean updateMenu;
 
@@ -118,22 +122,19 @@ public class View {
       c.register(this);
       menu = applet.createGraphics(getWidth(), getHeight());
 
-      setView(new ControllerView<SilderList>() {
-
-        public void display(PGraphics pg, SilderList t) {
-          if (updateMenu) {
-            updateMenu();
-          }
-          if (inside()) { // draw scrollbar
-            menu.beginDraw();
-            int len = -(itemHeight * items.size()) + getHeight();
-            int ty = (int) (applet.map(pos, len, 0, getHeight() - scrollerLength - 2, 2));
-            menu.fill(128);
-            menu.rect(getWidth() - 6, ty, 4, scrollerLength);
-            menu.endDraw();
-          }
-          pg.image(menu, 0, 0);
+      setView((pg, t) -> {
+        if (updateMenu) {
+          updateMenu();
         }
+        if (inside()) { // draw scrollbar
+          menu.beginDraw();
+          int len = -(itemHeight * items.size()) + getHeight();
+          int ty = (int) (PApplet.map(pos, len, 0, getHeight() - scrollerLength - 2, 2));
+          menu.fill(128);
+          menu.rect(getWidth() - 6, ty, 4, scrollerLength);
+          menu.endDraw();
+        }
+        pg.image(menu, 0, 0);
       });
       updateMenu();
     }
@@ -141,7 +142,7 @@ public class View {
     // only update the image buffer when necessary - to save some resources
     void updateMenu() {
       int len = -(itemHeight * items.size()) + getHeight();
-      npos = applet.constrain(npos, len, 0);
+      npos = PApplet.constrain(npos, len, 0);
       pos += (npos - pos) * 0.1;
 
       /// draw the SliderList
@@ -153,8 +154,8 @@ public class View {
       menu.translate(0, (int) (pos));
       menu.pushMatrix();
 
-      int i0 = PApplet.max(0, (int) (applet.map(-pos, 0, itemHeight * items.size(), 0, items.size())));
-      int range = applet.ceil(((float) (getHeight()) / (float) (itemHeight)) + 1);
+      int i0 = PApplet.max(0, (int) (PApplet.map(-pos, 0, itemHeight * items.size(), 0, items.size())));
+      int range = PApplet.ceil(((float) (getHeight()) / (float) (itemHeight)) + 1);
       int i1 = PApplet.min(items.size(), i0 + range);
 
       menu.translate(0, i0 * itemHeight);
@@ -175,13 +176,13 @@ public class View {
         float min = f(items.get(i).get("sliderValueMin"));
         float max = f(items.get(i).get("sliderValueMax"));
         float val = f(items.get(i).get("sliderValue"));
-        menu.rect(sliderX, sliderY, applet.map(val, min, max, 0, sliderWidth), sliderHeight);
+        menu.rect(sliderX, sliderY, PApplet.map(val, min, max, 0, sliderWidth), sliderHeight);
         menu.translate(0, itemHeight);
       }
       menu.popMatrix();
       menu.popMatrix();
       menu.endDraw();
-      updateMenu = applet.abs(npos - pos) > 0.01 ? true : false;
+      updateMenu = PApplet.abs(npos - pos) > 0.01 ? true : false;
     }
 
     // when detecting a click, check if the click happend to the far right,
@@ -189,7 +190,7 @@ public class View {
     // the list is supposed to do.
     public void onClick() {
       if (getPointer().x() > getWidth() - 10) {
-        npos = -applet.map(getPointer().y(), 0, getHeight(), 0, items.size() * itemHeight);
+        npos = -PApplet.map(getPointer().y(), 0, getHeight(), 0, items.size() * itemHeight);
         updateMenu = true;
       }
     }
@@ -204,7 +205,7 @@ public class View {
         dragIndex = getIndex();
         float min = f(items.get(dragIndex).get("sliderValueMin"));
         float max = f(items.get(dragIndex).get("sliderValueMax"));
-        float val = applet.constrain(applet.map(getPointer().x() - sliderX, 0, sliderWidth, min, max), min, max);
+        float val = PApplet.constrain(PApplet.map(getPointer().x() - sliderX, 0, sliderWidth, min, max), min, max);
         items.get(dragIndex).put("sliderValue", val);
         setValue(dragIndex);
       }
@@ -220,7 +221,7 @@ public class View {
         case (2): // drag slider
           float min = f(items.get(dragIndex).get("sliderValueMin"));
           float max = f(items.get(dragIndex).get("sliderValueMax"));
-          float val = applet.constrain(applet.map(getPointer().x() - sliderX, 0, sliderWidth, min, max), min, max);
+          float val = PApplet.constrain(PApplet.map(getPointer().x() - sliderX, 0, sliderWidth, min, max), min, max);
           items.get(dragIndex).put("sliderValue", val);
           setValue(dragIndex);
           updateMenu = true;
@@ -244,16 +245,16 @@ public class View {
 
     private int getIndex() {
       int len = itemHeight * items.size();
-      int index = (int) (applet.map(getPointer().y() - pos, 0, len, 0, items.size()));
+      int index = (int) (PApplet.map(getPointer().y() - pos, 0, len, 0, items.size()));
       return index;
     }
   }
 
-  public static float f(Object o) {
+  private static float f(Object o) {
     return (o instanceof Number) ? ((Number) o).floatValue() : Float.MIN_VALUE;
   }
 
-  public static boolean within(int theX, int theY, int theX1, int theY1, int theW1, int theH1) {
+  private static boolean within(int theX, int theY, int theX1, int theY1, int theW1, int theH1) {
     return (theX > theX1 && theX < theX1 + theW1 && theY > theY1 && theY < theY1 + theH1);
   }
 }
