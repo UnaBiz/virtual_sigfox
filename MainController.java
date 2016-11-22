@@ -9,7 +9,7 @@ class MainController {
   private Serial arduinoPort;  // Serial port connected to Arduino debug output.
   private String line;
 
-  MainController(PApplet applet0) {
+  MainController(PApplet applet0) {  //  Construct the controller.
     applet = applet0;
   }
 

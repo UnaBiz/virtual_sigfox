@@ -22,7 +22,7 @@ class View {
   private SilderList m = null;
   private PApplet applet = null;
 
-  View(PApplet applet0) {
+  View(PApplet applet0) {  //  Construct the view.
     applet = applet0;
   }
 
