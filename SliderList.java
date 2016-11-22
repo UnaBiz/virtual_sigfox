@@ -9,16 +9,18 @@ import controlP5.ControlP5;
 import controlP5.Controller;
 import controlP5.ControllerView;
 import processing.core.PApplet;
+import processing.core.PFont;
 import processing.core.PGraphics;
 import java.util.HashMap;
 import java.util.Map;
 
 class SliderList extends Controller<SliderList> {
 
+  private PFont f1;
   private float pos, npos;
   private int itemHeight = 60;
   private int scrollerLength = 40;
-  private int sliderWidth = 50;
+  private int sliderWidth = 70;
   private int sliderHeight = 15;
   private int sliderX = 10;
   private int sliderY = 25;
@@ -33,6 +35,7 @@ class SliderList extends Controller<SliderList> {
 
   SliderList(PApplet applet, ControlP5 c, String theName, int theWidth, int theHeight) {
     super(c, theName, 0, 0, theWidth, theHeight);
+    f1 = applet.createFont("Helvetica", 12);
     c.register(this);
     menu = applet.createGraphics(getWidth(), getHeight());
 
@@ -101,7 +104,7 @@ class SliderList extends Controller<SliderList> {
     menu.fill(200);
     menu.rect(0, itemHeight - 1, getWidth(), 1);
     // uncomment the following line to use a different font than the default controlP5 font
-    //menu.textFont(f1);
+    menu.textFont(f1);
 
     for (int col = 0; col < 4; col++) {
       //  Render each column.

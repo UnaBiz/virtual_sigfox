@@ -11,7 +11,6 @@ class View {
 
   private ControlP5 cp5;
 
-  private PFont f1;
   private int NUM = 100;
   private float[] rotation = new float[NUM];
   private SliderList m = null;
@@ -26,8 +25,6 @@ class View {
   }
 
   void setup() {
-    //  size(800, 400 ,P3D);
-    f1 = applet.createFont("Helvetica", 12);
     cp5 = new ControlP5(applet);
     // create a custom SilderList with name menu, notice that function
     // menu will be called when a menu item has been clicked.
