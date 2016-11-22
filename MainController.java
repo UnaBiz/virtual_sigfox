@@ -3,7 +3,6 @@ import processing.serial.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import static processing.core.PApplet.str;
 
@@ -75,7 +74,7 @@ class MainController {
     //  Decode the fields in the message.
     HashMap<String, Object> fields = Message.decodeMessage(data);
     //  Display the fields.
-    virtual_sigfox.view.addItem(fields);
+    virtual_sigfox.view.addRow(fields);
   }
 
   private void processMessage(String line) {

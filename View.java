@@ -3,6 +3,7 @@ import controlP5.ControlP5;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PFont;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,12 +35,25 @@ class View {
     m.setPosition(40, 20);
   }
 
-  private int ctr = 0;
+  private int row = 0;
 
-  void addItem(HashMap<String, Object> fields) {
-    //  Add an item: m.addItem(makeItem("slider-"+i, 0, -PI, PI ));
-    m.addItem(makeItem(String.valueOf(ctr) + ": tmp", (float) (32.0 + (ctr / 2.0)), 30, 40 ));
-    ctr++;
+  void addRow(HashMap<String, Object> fields) {
+    //  Add an item: m.addRow(makeItem("slider-"+i, 0, -PI, PI ));
+    String prefix = String.valueOf(row + 1) + ": ";
+    int col = 0;
+    for (String key: fields.keySet()) {
+      Object val = fields.get(key);
+      Map<String, Object> item = null;
+      if (val instanceof Float) {
+        item = makeItem(prefix + key, (float) val, (float) val - 1, (float) val + 1);
+      } else {
+        item = makeItem(prefix + key, 0, 0, 1);  //  TODO: Show text value.
+      }
+      m.addItem(row, col, item);
+      col++;
+      prefix = "";
+    }
+    row++;
   }
 
   // a convenience function to build a map that contains our key-value
