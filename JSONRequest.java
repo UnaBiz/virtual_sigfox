@@ -7,10 +7,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.X509TrustManager;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
