@@ -2,7 +2,7 @@ import java.util.HashMap;
 
 public class Message {
 
-  private static HashMap<String, Object> decodeMessage(String msg) {
+  static HashMap<String, Object> decodeMessage(String msg) {
     //  Decode the packed binary SIGFOX message
     //  e.g. 920e5a00b051680194597b00 -> {ctr:9.0, tmp:36.0, vlt:12.3}
     //  2 bytes name, 2 bytes float * 10, 2 bytes name, 2 bytes float * 10, ...

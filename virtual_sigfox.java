@@ -10,8 +10,6 @@ import processing.core.PApplet;
 
 public class virtual_sigfox extends PApplet {
 
-  public static void main(String args[]) { PApplet.main("virtual_sigfox"); }
-
   //  If you have multiple serial ports, change this number to select the specific port.
   //  Valid values: 0 to (total number of ports) - 1.
   public final static int serialPortIndex = 0;
@@ -23,8 +21,11 @@ public class virtual_sigfox extends PApplet {
       "http://chendol.tp-iot.com/prod/ProcessSIGFOXMessage"  //  nginx proxy to API Gateway.
   };
 
-  public static MainController controller = null;
-  public static View view = null;
+  public static MainController controller = null;  //  Controller to drive the main logic.
+  public static View view = null;  //  View for displaying the UI.
+
+  //  Main function to start the app.
+  public static void main(String args[]) { PApplet.main("virtual_sigfox"); }
 
   public virtual_sigfox() {  //  Construct the Processing app instance.
     //  Create the controller and view.

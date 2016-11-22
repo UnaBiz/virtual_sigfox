@@ -38,12 +38,14 @@ class View {
     // menu will be called when a menu item has been clicked.
     m = new SilderList(cp5, "menu", 250, 350);
     m.setPosition(40, 20);
-    // add some items to our SilderList
-        /*
-        for (int i=0;i<NUM;i++) {
-          m.addItem(makeItem("slider-"+i, 0, -PI, PI ));
-        }
-        */
+  }
+
+  private int ctr = 0;
+
+  void addItem(HashMap<String, Object> fields) {
+    //  Add an item: m.addItem(makeItem("slider-"+i, 0, -PI, PI ));
+    m.addItem(makeItem(String.valueOf(ctr) + ": tmp", (float) (32.0 + (ctr / 2.0)), 30, 40 ));
+    ctr++;
   }
 
   // a convenience function to build a map that contains our key-value
@@ -87,13 +89,6 @@ class View {
     applet.popMatrix();
   }
 
-  private int ctr = 0;
-
-  void addItem() {
-    m.addItem(makeItem(String.valueOf(ctr) + ": tmp", (float) (32.0 + (ctr / 2.0)), 30, 40 ));
-    ctr++;
-  }
-
   // A custom Controller that implements a scrollable SilderList.
   // Here the controller uses a PGraphics element to render customizable
   // list items. The SilderList can be scrolled using the scroll-wheel,
@@ -132,7 +127,7 @@ class View {
           if (inside()) { // draw scrollbar
             menu.beginDraw();
             int len = -(itemHeight * items.size()) + getHeight();
-            int ty = (int) (applet.map(pos, len, 0, getHeight() - scrollerLength - 2, 2));
+            int ty = (int) (PApplet.map(pos, len, 0, getHeight() - scrollerLength - 2, 2));
             menu.fill(128);
             menu.rect(getWidth() - 6, ty, 4, scrollerLength);
             menu.endDraw();
@@ -158,6 +153,14 @@ class View {
       menu.translate(0, (int) (pos));
       menu.pushMatrix();
 
+      if (items.size() > 0) renderMenu();
+      menu.popMatrix();
+      menu.popMatrix();
+      menu.endDraw();
+      updateMenu = PApplet.abs(npos - pos) > 0.01;
+    }
+
+    private void renderMenu() {
       int i0 = PApplet.max(0, (int) (PApplet.map(-pos, 0, itemHeight * items.size(), 0, items.size())));
       int range = PApplet.ceil(((float) (getHeight()) / (float) (itemHeight)) + 1);
       int i1 = PApplet.min(items.size(), i0 + range);
@@ -183,13 +186,9 @@ class View {
         menu.rect(sliderX, sliderY, PApplet.map(val, min, max, 0, sliderWidth), sliderHeight);
         menu.translate(0, itemHeight);
       }
-      menu.popMatrix();
-      menu.popMatrix();
-      menu.endDraw();
-      updateMenu = PApplet.abs(npos - pos) > 0.01 ? true : false;
     }
 
-    // when detecting a click, check if the click happend to the far right,
+    // when detecting a click, check if the click happened to the far right,
     // if yes, scroll to that position, otherwise do whatever this item of
     // the list is supposed to do.
     public void onClick() {

@@ -1,6 +1,8 @@
 import processing.core.PApplet;
 import processing.serial.*;
 
+import java.util.HashMap;
+
 import static processing.core.PApplet.str;
 
 class MainController {
@@ -58,9 +60,12 @@ class MainController {
       post.addHeader("Content-Type", "application/json");
       post.addJson(json);
       post.send();
-      PApplet.println(prefix + "Emulate server reponse:" + post.getContent());
+      PApplet.println(prefix + "Emulate server response:" + post.getContent());
     }
-    virtual_sigfox.view.addItem();
+    //  Decode the fields in the message.
+    HashMap<String, Object> fields = Message.decodeMessage(data);
+    //  Display the fields.
+    virtual_sigfox.view.addItem(fields);
   }
 
   private void processMessage(String line) {
@@ -84,14 +89,15 @@ class MainController {
 
     switch(i) {
       case 0: {  //  sendMessage
+        //  Emulate the SIGFOX message by sending to an emulation server.
         String device = msgArray[0];
         String data = msgArray[1];
         PApplet.println(prefix + "Detected message for device=" + device + ", data=" + data);
-        //  Emulate the SIGFOX message by sending to an emulation server.
         sendEmulatedMessage(device, data);
         break;
       }
       case 1: {  //  stop
+        //  Stop the program.
         PApplet.println(prefix + "Arduino stopped: " + msg);
         applet.exit();
         break;
