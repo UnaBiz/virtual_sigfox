@@ -182,4 +182,3 @@ class SliderList extends Controller<SliderList> {
     return (theX > theX1 && theX < theX1 + theW1 && theY > theY1 && theY < theY1 + theH1);
   }
 }
-
