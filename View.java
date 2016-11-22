@@ -43,11 +43,11 @@ class View {
     int col = 0;
     for (String key: fields.keySet()) {
       Object val = fields.get(key);
-      Map<String, Object> item = null;
+      Map<String, Object> item;
       if (val instanceof Float) {
-        item = makeItem(prefix + key, (float) val, (float) val - 1, (float) val + 1);
+        item = makeItem(prefix + key, val, (float) val - 1, (float) val + 1);
       } else {
-        item = makeItem(prefix + key, 0, 0, 1);  //  TODO: Show text value.
+        item = makeItem(prefix + key, val, 0, 1);
       }
       m.addItem(row, col, item);
       col++;
@@ -59,26 +59,13 @@ class View {
   // a convenience function to build a map that contains our key-value
   // pairs which we will then use to render each item of the SilderList.
   //
-  private Map<String, Object> makeItem(String theLabel, float theValue, float theMin, float theMax) {
+  private Map<String, Object> makeItem(String theLabel, Object theValue, float theMin, float theMax) {
     HashMap<String, Object> m = new HashMap<>();
     m.put("label", theLabel);
     m.put("sliderValue", theValue);
     m.put("sliderValueMin", theMin);
     m.put("sliderValueMax", theMax);
     return m;
-  }
-
-  void menu(int i) {
-    PApplet.println("got some slider-list event from item with index " + i);
-  }
-
-  public void controlEvent(ControlEvent theEvent) {
-    if (theEvent.isFrom("menu")) {
-      int index = (int) theEvent.getValue();
-      Map m = ((SliderList) theEvent.getController()).getItem(index);
-      PApplet.println("got a slider event from item : " + m);
-      rotation[index] = f(m.get("sliderValue"));
-    }
   }
 
   void draw() {
@@ -97,8 +84,17 @@ class View {
     applet.popMatrix();
   }
 
-  private static float f(Object o) {
-    return (o instanceof Number) ? ((Number) o).floatValue() : Float.MIN_VALUE;
+  // void menu(int i) { PApplet.println("got some slider-list event from item with index " + i); }
+
+  public void controlEvent(ControlEvent theEvent) {
+    /* TODO
+    if (theEvent.isFrom("menu")) {
+      int index = (int) theEvent.getValue();
+      Map m = ((SliderList) theEvent.getController()).getItem(index);
+      PApplet.println("got a slider event from item : " + m);
+      rotation[index] = f(m.get("sliderValue"));
+    }
+    */
   }
 
 }

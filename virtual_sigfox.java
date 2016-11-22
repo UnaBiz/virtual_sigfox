@@ -21,6 +21,8 @@ public class virtual_sigfox extends PApplet {
       "http://chendol.tp-iot.com/prod/ProcessSIGFOXMessage"  //  nginx proxy to API Gateway.
   };
 
+  public final static boolean testMode = true;
+
   public static MainController controller = null;  //  Controller to drive the main logic.
   public static View view = null;  //  View for displaying the UI.
 

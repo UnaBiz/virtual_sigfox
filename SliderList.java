@@ -10,10 +10,7 @@ import controlP5.Controller;
 import controlP5.ControllerView;
 import processing.core.PApplet;
 import processing.core.PGraphics;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 class SliderList extends Controller<SliderList> {
@@ -47,7 +44,7 @@ class SliderList extends Controller<SliderList> {
         }
         if (inside()) { // draw scrollbar
           menu.beginDraw();
-          int len = -(itemHeight * items.size()) + getHeight();
+          int len = -(itemHeight * rowCount) + getHeight();
           int ty = (int) (PApplet.map(pos, len, 0, getHeight() - scrollerLength - 2, 2));
           menu.fill(128);
           menu.rect(getWidth() - 6, ty, 4, scrollerLength);
@@ -61,7 +58,7 @@ class SliderList extends Controller<SliderList> {
 
   // only update the image buffer when necessary - to save some resources
   private void updateMenu() {
-    int len = -(itemHeight * items.size()) + getHeight();
+    int len = -(itemHeight * rowCount) + getHeight();
     npos = PApplet.constrain(npos, len, 0);
     pos += (npos - pos) * 0.1;
 
@@ -74,11 +71,11 @@ class SliderList extends Controller<SliderList> {
     menu.translate(0, (int) (pos));
     menu.pushMatrix();
 
-    if (items.size() > 0) renderMenu();
+    if (rowCount > 0) renderMenu();
     menu.popMatrix();
     menu.popMatrix();
     menu.endDraw();
-    if (items.size() == 0) {
+    if (rowCount == 0) {
       updateMenu = false;
     } else {
       updateMenu = PApplet.abs(npos - pos) > 0.01;
@@ -87,9 +84,10 @@ class SliderList extends Controller<SliderList> {
 
   private void renderMenu() {
     //  Render each row of the menu.
-    int i0 = PApplet.max(0, (int) (PApplet.map(-pos, 0, itemHeight * items.size(), 0, items.size())));
+    int i0 = PApplet.max(0, (int) (PApplet.map(-pos, 0, itemHeight * rowCount,
+        0, rowCount)));
     int range = PApplet.ceil(((float) (getHeight()) / (float) (itemHeight)) + 1);
-    int i1 = PApplet.min(items.size(), i0 + range);
+    int i1 = PApplet.min(rowCount, i0 + range);
     menu.translate(0, i0 * itemHeight);
     for (int i = i0; i < i1; i++) {
       renderRow(i);
@@ -98,13 +96,6 @@ class SliderList extends Controller<SliderList> {
 
   private void renderRow(int row) {
     //  Render one row of the menu.
-    Map m = items.get(row);
-    float min = f(m.get("sliderValueMin"));
-    float max = f(m.get("sliderValueMax"));
-    float val = f(m.get("sliderValue"));
-    String label = m.get("label").toString().toUpperCase();
-    String txt = String.format("%s   %.2f", label, val);
-
     menu.noStroke();
     menu.fill(200);
     menu.rect(0, itemHeight - 1, getWidth(), 1);
@@ -113,13 +104,29 @@ class SliderList extends Controller<SliderList> {
 
     for (int col = 0; col < 4; col++) {
       //  Render each column.
+      Map m = getItem(row, col);
+      if (m == null) continue;
+
+      float min = f(m.get("sliderValueMin"));
+      float max = f(m.get("sliderValueMax"));
+      Object val = f(m.get("sliderValue"));
+      String label = m.get("label").toString().toUpperCase();
+
+      String txt;
+      float val2 = 0;
+      if (val instanceof Float) {
+        val2 = (float) val;
+        txt = String.format("%s   %.2f", label, val2);
+      }
+      else txt = String.format("%s   %s", label, val);
+
       int left = (int) (col * (sliderWidth * 1.1));
       menu.fill(150);
       menu.text(txt, left + 10, 20);
       menu.fill(255);
       menu.rect(left + sliderX, sliderY, sliderWidth, sliderHeight);
       menu.fill(100, 230, 128);
-      menu.rect(left + sliderX, sliderY, PApplet.map(val, min, max, 0, sliderWidth), sliderHeight);
+      menu.rect(left + sliderX, sliderY, PApplet.map(val2, min, max, 0, sliderWidth), sliderHeight);
     }
     menu.translate(0, itemHeight);
   }
