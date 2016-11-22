@@ -78,6 +78,7 @@ class SliderList extends Controller<SliderList> {
     if (rowCount == 0) {
       updateMenu = false;
     } else {
+      if (itemHeight * rowCount < getHeight()) npos = 0;
       updateMenu = PApplet.abs(npos - pos) > 0.01;
     }
   }
@@ -104,31 +105,36 @@ class SliderList extends Controller<SliderList> {
 
     for (int col = 0; col < 4; col++) {
       //  Render each column.
-      Map m = getItem(row, col);
-      if (m == null) continue;
-
-      float min = f(m.get("sliderValueMin"));
-      float max = f(m.get("sliderValueMax"));
-      Object val = f(m.get("sliderValue"));
-      String label = m.get("label").toString().toUpperCase();
-
-      String txt;
-      float val2 = 0;
-      if (val instanceof Float) {
-        val2 = (float) val;
-        txt = String.format("%s   %.2f", label, val2);
-      }
-      else txt = String.format("%s   %s", label, val);
-
-      int left = (int) (col * (sliderWidth * 1.1));
-      menu.fill(150);
-      menu.text(txt, left + 10, 20);
-      menu.fill(255);
-      menu.rect(left + sliderX, sliderY, sliderWidth, sliderHeight);
-      menu.fill(100, 230, 128);
-      menu.rect(left + sliderX, sliderY, PApplet.map(val2, min, max, 0, sliderWidth), sliderHeight);
+      renderCell(row, col);
     }
     menu.translate(0, itemHeight);
+  }
+
+  private void renderCell(int row, int col) {
+    //  Render the cell at (row,col).
+    Map m = getItem(row, col);
+    if (m == null) return;
+
+    float min = f(m.get("sliderValueMin"));
+    float max = f(m.get("sliderValueMax"));
+    Object val = f(m.get("sliderValue"));
+    String label = m.get("label").toString().toUpperCase();
+
+    String txt;
+    float val2 = 0;
+    if (val instanceof Float) {
+      val2 = (float) val;
+      txt = String.format("%s   %.2f", label, val2);
+    }
+    else txt = String.format("%s   %s", label, val);
+
+    int left = (int) (col * (sliderWidth * 1.1));
+    menu.fill(150);
+    menu.text(txt, left + 10, 20);
+    menu.fill(255);
+    menu.rect(left + sliderX, sliderY, sliderWidth, sliderHeight);
+    menu.fill(100, 230, 128);
+    menu.rect(left + sliderX, sliderY, PApplet.map(val2, min, max, 0, sliderWidth), sliderHeight);
   }
 
   // when detecting a click, check if the click happened to the far right,

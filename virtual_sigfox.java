@@ -12,19 +12,19 @@ public class virtual_sigfox extends PApplet {
 
   //  If you have multiple serial ports, change this number to select the specific port.
   //  Valid values: 0 to (total number of ports) - 1.
-  public final static int serialPortIndex = 0;
+  final static int serialPortIndex = 0;
 
-  public final static String[] emulateServerURLs = {  //  URLs for the SIGFOX emulation servers.
+  final static String[] emulateServerURLs = {  //  URLs for the SIGFOX emulation servers.
       //  Can't use https because need to install SSL cert locally. So we use nginx to run
       //  a http proxy to https.  See nginx.conf.
       //  "https://l0043j2svc.execute-api.us-west-2.amazonaws.com/prod/ProcessSIGFOXMessage"
       "http://chendol.tp-iot.com/prod/ProcessSIGFOXMessage"  //  nginx proxy to API Gateway.
   };
 
-  public final static boolean testMode = true;
+  final static boolean testMode = true;
 
-  public static MainController controller = null;  //  Controller to drive the main logic.
-  public static View view = null;  //  View for displaying the UI.
+  private static MainController controller = null;  //  Controller to drive the main logic.
+  static View view = null;  //  View for displaying the UI.
 
   //  Main function to start the app.
   public static void main(String args[]) { PApplet.main("virtual_sigfox"); }

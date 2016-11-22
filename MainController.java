@@ -22,7 +22,7 @@ class MainController {
   }
 
   void setup() {  //  Will be called only once.
-    if (virtual_sigfox.testMode) return;
+    if (virtual_sigfox.testMode) return;  //  Don't open serial port for test mode.
     //  Open the serial port that connects to the Arduino device.
     String[] serialPorts = Serial.list();
     //  Exclude Bluetooth ports on Mac.
