@@ -16,6 +16,10 @@ import java.util.Map;
 
 class SliderList extends Controller<SliderList> {
 
+  float[] values = new float[View.rows * View.cols];
+  float[] colMin = new float[View.dataCols];  //  Min value of each col.
+  float[] colMax = new float[View.dataCols];  //  Max value of each col.
+
   private PFont f1;
   private float pos, npos;
   private int itemHeight = 60;

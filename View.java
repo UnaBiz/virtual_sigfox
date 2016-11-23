@@ -16,7 +16,6 @@ class View {
       {255, 0, 128},
       {128, 200, 0}
   };
-  private float[] matrix = new float[rows * cols];
   private SliderList sliderList = null;
   private PApplet applet = null;
 
@@ -46,9 +45,9 @@ class View {
       Object val = fields.get(key);
       Map<String, Object> item;
       if (val instanceof Float) {
-        item = makeItem(prefix + key, val, (float) val - 1, (float) val + 1);
+        item = makeItem(prefix + key, val);
       } else {
-        item = makeItem(prefix + key, val, 0, 1);
+        item = makeItem(prefix + key, val);
       }
       sliderList.addItem(row, col, item);
       col++;
@@ -75,16 +74,23 @@ class View {
     applet.pushMatrix();
     applet.translate(sliderWidth + sliderLeft + 20, sliderTop);
     for (int i = 0; i < rows * cols; i++) {
-      applet.pushMatrix();
+      float val = sliderList.values[i];
+      if (val == 0) continue;
       int col = i % cols;
       int dataCol = col % dataCols;
       float x = col * width * (float) 1.2;
       float y = ((i / cols) + 1) * height * (float) 1.2;
+
+      float range = sliderList.colMax[dataCol] - sliderList.colMin[dataCol];
+      float normalisedVal = 1;
+      if (range > 0) normalisedVal = (val - sliderList.colMin[dataCol]) / range;
+
+      applet.pushMatrix();
       applet.translate(x, y);
       applet.fill(200, 200, 200);
       applet.rect(0, 0, width, height);
       applet.fill(columnColors[dataCol][0], columnColors[dataCol][1], columnColors[dataCol][2]);
-      applet.rect(0, 0, (int) (width * 0.5), height);
+      applet.rect(0, 0, (int) (width * normalisedVal), height);
       applet.popMatrix();
     }
     applet.popMatrix();
