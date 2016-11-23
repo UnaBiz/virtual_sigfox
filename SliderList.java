@@ -138,7 +138,7 @@ class SliderList extends Controller<SliderList> {
 
     int left = (int) (col * (sliderWidth * 1.1));
     sliderList.fill(150);
-    sliderList.text(txt, left + 10, 20);
+    sliderList.text(txt, left + 15, 20);
     if (col == 0) {
       //  Show row header.
       sliderList.text("" + row + ":", left, 20);
