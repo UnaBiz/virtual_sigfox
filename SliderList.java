@@ -146,8 +146,10 @@ class SliderList extends Controller<SliderList> {
     sliderList.fill(255);
     sliderList.rect(left + sliderX, sliderY, sliderWidth, sliderHeight);
     sliderList.fill(View.columnColors[col][0], View.columnColors[col][1], View.columnColors[col][2]);
-    sliderList.rect(left + sliderX, sliderY, PApplet.map(val2, min, max, 0, sliderWidth),
-        sliderHeight);
+    if (min != max) {
+      sliderList.rect(left + sliderX, sliderY, PApplet.map(val2, min, max, 0, sliderWidth),
+          sliderHeight);
+    }
   }
 
   // when detecting a click, check if the click happened to the far right,

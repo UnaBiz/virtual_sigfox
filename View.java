@@ -1,10 +1,14 @@
+import controlP5.Button;
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
+import controlP5.ScrollableList;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PFont;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 class View {
@@ -21,8 +25,10 @@ class View {
 
   MainController controller = null;
   private ControlP5 cp5;
-  private PFont font;
   private SliderList sliderList = null;
+  Button connectButton = null;
+  ScrollableList selectPort = null;
+  private PFont font;
   private PApplet applet = null;
   private String[] dataColNames = new String[dataCols];
 
@@ -32,6 +38,7 @@ class View {
 
   void settings() { //  Will be called only once.
     applet.size(800, 400, PConstants.P3D);
+    applet.smooth(4);
   }
 
   void setup(MainController controller0) {
@@ -40,11 +47,33 @@ class View {
     font = applet.createFont("Helvetica", 12);
     sliderList = new SliderList(applet, cp5, "sliderList", sliderWidth, sliderHeight, font);
     sliderList.setPosition(sliderLeft, sliderTop);
+  }
 
-    cp5.addButton("connect")
+  void showPorts(List ports) {
+    int selectHeight = 19;
+
+    cp5.addTextlabel("label")
+        .setFont(font)
+        .setText("Connect your Arduino to the USB port and click 'Connect'")
+        .setPosition(sliderLeft,sliderTop - selectHeight * 2)
+        .setColorValue(0x000000)
+    ;
+
+    connectButton = cp5.addButton("connect")
         .setLabel("Connect")
-        .setPosition(sliderLeft + 2 * sliderWidth / 3,sliderTop - 20)
-        .setSize(sliderWidth / 3,19)
+        .setPosition(sliderLeft + 2 * sliderWidth / 3,sliderTop - selectHeight)
+        .setSize(sliderWidth / 3,selectHeight)
+    ;
+
+    selectPort = cp5.addScrollableList("selectPort")
+        .setType(ScrollableList.DROPDOWN) // currently supported DROPDOWN and LIST
+        .setLabel("Select the Arduino port")
+        .setPosition(sliderLeft,sliderTop - selectHeight)
+        .setSize(2 * sliderWidth / 3, selectHeight * Math.min(ports.size() + 1, 5))
+        .setBarHeight(selectHeight)
+        .setItemHeight(selectHeight)
+        .addItems(ports)
+        .setValue(0);
     ;
   }
 

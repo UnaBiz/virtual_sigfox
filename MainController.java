@@ -16,6 +16,7 @@ class MainController {
   private long lastRead = 0;
   private boolean connected = false;
   ArrayList<String> serialPortsFiltered = null;
+  private int serialPortIndex = 0;
 
   MainController(PApplet applet0) {  //  Construct the controller.
     applet = applet0;
@@ -31,38 +32,46 @@ class MainController {
     //  Exclude Bluetooth ports on Mac.
     serialPortsFiltered = new ArrayList<>();
     for (String port: serialPorts) {
-      if (port.toLowerCase().contains("bluetooth")) continue;
+      //if (!virtual_sigfox.testMode && port.toLowerCase().contains("bluetooth")) continue;
       serialPortsFiltered.add(port);
     }
     PApplet.println(prefix + "Found COM / serial ports: ");
     PApplet.printArray(serialPortsFiltered);
+    //  Show the ports.
+    view.showPorts(serialPortsFiltered);
   }
 
-  void connect(int index) {
+  void selectPort(int index) {
+    //  Select the serial port.
+    serialPortIndex = index;
+  }
+
+  void connect() {
     //  Connect to serial port and receive data.
+    if (connected) { disconnect(); return; }
     if (virtual_sigfox.testMode) {
-      connected = true;
+      connected = true; view.connectButton.setLabel("Disconnect");
       return;  //  Don't open serial port for test mode.
     }
-    if (index >= serialPortsFiltered.size()) {
+    if (serialPortIndex >= serialPortsFiltered.size()) {
       if (serialPortsFiltered.size() == 0)
         PApplet.println("****Error: No COM / serial ports found. Check your Arduino USB connection");
-      else if (index > 0)
-        PApplet.println("****Error: No COM / serial ports found at index " + str(index) +
+      else if (serialPortIndex > 0)
+        PApplet.println("****Error: No COM / serial ports found at index " + str(serialPortIndex) +
             ". Edit virtual_sigfox.java, change serialPortIndex to a number between 0 and " +
             str(serialPortsFiltered.size() - 1));
       return;
     }
-    String portName = serialPortsFiltered.get(index);
+    String portName = serialPortsFiltered.get(serialPortIndex);
     PApplet.println(prefix + "Connecting to Arduino at port " + portName + "...");
     arduinoPort = new Serial(applet, portName, 9600);
-    connected = true;
+    connected = true; view.connectButton.setLabel("Disconnect");
     //  Upon connection, the Arduino will automatically restart the sketch.
   }
 
   void disconnect() {
     //  Disconnect from the port.
-    connected = false;
+    connected = false; view.connectButton.setLabel("Connect");
     if (virtual_sigfox.testMode) return;
     if (arduinoPort == null) return;
     arduinoPort.stop();

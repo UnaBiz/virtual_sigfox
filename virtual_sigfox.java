@@ -21,7 +21,7 @@ public class virtual_sigfox extends PApplet {
       "http://chendol.tp-iot.com/prod/ProcessSIGFOXMessage"  //  nginx proxy to API Gateway.
   };
 
-  final static boolean testMode = true;
+  final static boolean testMode = false;
 
   private static MainController controller = null;  //  Controller to drive the main logic.
   static View view = null;  //  View for displaying the UI.
@@ -45,8 +45,8 @@ public class virtual_sigfox extends PApplet {
   @Override
   public void setup() {  //  Will be called only once.
     //  Delegate to the controller and view.
+    view.setup(controller);  //  Must setup view first because controller will call view.
     controller.setup(view);
-    view.setup(controller);
   }
 
   @Override
@@ -56,10 +56,12 @@ public class virtual_sigfox extends PApplet {
     view.draw();
   }
 
-  public void connect(int theValue) {
-    System.out.println("Connect pressed: "+theValue);
-    int index = serialPortIndex;
-    controller.connect(index);
+  public void selectPort(int index) {  //  Serial port selected.
+    controller.selectPort(index);
+  }
+
+  public void connect(int theValue) {  //  Connect button pressed.
+    controller.connect();
   }
 
 
