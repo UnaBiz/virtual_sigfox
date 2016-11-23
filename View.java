@@ -12,13 +12,14 @@ class View {
   static final int dataCols = 3;  //  Number of data columns.
   static final int displayRows = 10, displayCols = 9, width = 40, height = 20;  //  Grid display.
   static final int colGroups = displayCols / dataCols;  //  How many groups of columns.
-  static final int sliderWidth = 250, sliderHeight = 350, sliderLeft = 40, sliderTop = 20;
+  static final int sliderWidth = 250, sliderHeight = 350, sliderLeft = 40, sliderTop = 40;
   static final int[][] columnColors = {
       {0, 128, 255},
       {255, 0, 128},
       {128, 200, 0}
   };
 
+  MainController controller = null;
   private ControlP5 cp5;
   private PFont font;
   private SliderList sliderList = null;
@@ -33,11 +34,18 @@ class View {
     applet.size(800, 400, PConstants.P3D);
   }
 
-  void setup() {
+  void setup(MainController controller0) {
+    controller = controller0;
     cp5 = new ControlP5(applet);
     font = applet.createFont("Helvetica", 12);
     sliderList = new SliderList(applet, cp5, "sliderList", sliderWidth, sliderHeight, font);
     sliderList.setPosition(sliderLeft, sliderTop);
+
+    cp5.addButton("connect")
+        .setLabel("Connect")
+        .setPosition(sliderLeft + 2 * sliderWidth / 3,sliderTop - 20)
+        .setSize(sliderWidth / 3,19)
+    ;
   }
 
   private int row = 0;

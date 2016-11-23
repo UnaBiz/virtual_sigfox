@@ -9,10 +9,13 @@ import static processing.core.PApplet.str;
 class MainController {
 
   private PApplet applet = null;
+  View view = null;
   private Serial arduinoPort;  // Serial port connected to Arduino debug output.
   private String line;
   private int lineCount = 0;
   private long lastRead = 0;
+  private boolean connected = false;
+  ArrayList<String> serialPortsFiltered = null;
 
   MainController(PApplet applet0) {  //  Construct the controller.
     applet = applet0;
@@ -21,39 +24,60 @@ class MainController {
   void settings() { //  Will be called only once.
   }
 
-  void setup() {  //  Will be called only once.
-    if (virtual_sigfox.testMode) return;  //  Don't open serial port for test mode.
+  void setup(View view0) {  //  Will be called only once.
+    view = view0;
     //  Open the serial port that connects to the Arduino device.
     String[] serialPorts = Serial.list();
     //  Exclude Bluetooth ports on Mac.
-    ArrayList<String> serialPortsFiltered = new ArrayList<>();
+    serialPortsFiltered = new ArrayList<>();
     for (String port: serialPorts) {
       if (port.toLowerCase().contains("bluetooth")) continue;
       serialPortsFiltered.add(port);
     }
-
     PApplet.println(prefix + "Found COM / serial ports: ");
     PApplet.printArray(serialPortsFiltered);
-    if (virtual_sigfox.serialPortIndex >= serialPortsFiltered.size()) {
+  }
+
+  void connect(int index) {
+    //  Connect to serial port and receive data.
+    if (virtual_sigfox.testMode) {
+      connected = true;
+      return;  //  Don't open serial port for test mode.
+    }
+    if (index >= serialPortsFiltered.size()) {
       if (serialPortsFiltered.size() == 0)
         PApplet.println("****Error: No COM / serial ports found. Check your Arduino USB connection");
-      else if (virtual_sigfox.serialPortIndex > 0)
-        PApplet.println("****Error: No COM / serial ports found at index " + str(virtual_sigfox.serialPortIndex) +
+      else if (index > 0)
+        PApplet.println("****Error: No COM / serial ports found at index " + str(index) +
             ". Edit virtual_sigfox.java, change serialPortIndex to a number between 0 and " +
             str(serialPortsFiltered.size() - 1));
-      applet.exit();
+      return;
     }
-    String portName = serialPortsFiltered.get(virtual_sigfox.serialPortIndex);
+    String portName = serialPortsFiltered.get(index);
     PApplet.println(prefix + "Connecting to Arduino at port " + portName + "...");
     arduinoPort = new Serial(applet, portName, 9600);
+    connected = true;
     //  Upon connection, the Arduino will automatically restart the sketch.
+  }
+
+  void disconnect() {
+    //  Disconnect from the port.
+    connected = false;
+    if (virtual_sigfox.testMode) return;
+    if (arduinoPort == null) return;
+    arduinoPort.stop();
+    arduinoPort = null;
   }
 
   void draw() {  //  Will be called when screen needs to be refreshed.
     //  Receive one line at a time from the serial port, which is connected
     //  to the debug output of the Arduino.
+    if (!connected) return;
     if (virtual_sigfox.testMode) {  //  Test mode with simulated input.
-      if (lineCount >= testInput.length) return;
+      if (lineCount >= testInput.length) {  //  No more lines.
+        disconnect();
+        return;
+      }
       if (System.currentTimeMillis() - lastRead < 100) return;
       line = testInput[lineCount] + '\n';
     }
@@ -118,7 +142,7 @@ class MainController {
       case 1: {  //  stop
         //  Stop the program.
         PApplet.println(prefix + "Arduino stopped: " + msg);
-        applet.exit();
+        disconnect();
         break;
       }
       default: break;

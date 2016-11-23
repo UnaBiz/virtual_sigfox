@@ -45,8 +45,8 @@ public class virtual_sigfox extends PApplet {
   @Override
   public void setup() {  //  Will be called only once.
     //  Delegate to the controller and view.
-    controller.setup();
-    view.setup();
+    controller.setup(view);
+    view.setup(controller);
   }
 
   @Override
@@ -55,5 +55,12 @@ public class virtual_sigfox extends PApplet {
     controller.draw();
     view.draw();
   }
+
+  public void connect(int theValue) {
+    System.out.println("Connect pressed: "+theValue);
+    int index = serialPortIndex;
+    controller.connect(index);
+  }
+
 
 }
