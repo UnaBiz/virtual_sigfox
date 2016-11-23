@@ -16,11 +16,13 @@ import java.util.Map;
 
 class SliderList extends Controller<SliderList> {
 
-  float[] values = new float[View.rows * View.cols];
+  //  For faster rendering of the grid, we cache the values into this matrix.
+  final static int valuesRows = View.displayRows * View.colGroups;
+  float[][] values = new float[valuesRows][View.dataCols];
   float[] colMin = new float[View.dataCols];  //  Min value of each col.
   float[] colMax = new float[View.dataCols];  //  Max value of each col.
 
-  private PFont f1;
+  private PFont font;
   private float pos, npos;
   private int itemHeight = 60;
   private int scrollerLength = 40;
@@ -31,15 +33,17 @@ class SliderList extends Controller<SliderList> {
 
   private int dragMode = 0;
   private int dragIndex = -1;
-  private int rowCount = 0, colCount = 0;  //  Number of rows and cols.
+  public int rowCount = 0;
+  private int colCount = 0;  //  Number of displayRows and displayCols.
 
   private HashMap<String, Map<String, Object>> items2 = new HashMap<>();
   private PGraphics sliderList;
   private boolean updateDisplay;
 
-  SliderList(PApplet applet, ControlP5 c, String theName, int theWidth, int theHeight) {
+  SliderList(PApplet applet, ControlP5 c, String theName, int theWidth, int theHeight,
+             PFont font0) {
     super(c, theName, 0, 0, theWidth, theHeight);
-    f1 = applet.createFont("Helvetica", 12);
+    font = font0;
     c.register(this);
     sliderList = applet.createGraphics(getWidth(), getHeight());
 
@@ -108,7 +112,7 @@ class SliderList extends Controller<SliderList> {
     sliderList.fill(200);
     sliderList.rect(0, itemHeight - 1, getWidth(), 1);
     // uncomment the following line to use a different font than the default controlP5 font
-    sliderList.textFont(f1);
+    sliderList.textFont(font);
 
     for (int col = 0; col < 4; col++) {
       //  Render each column.
@@ -121,22 +125,27 @@ class SliderList extends Controller<SliderList> {
     //  Render the cell at (row,col).
     Map m = getItem(row, col);
     if (m == null) return;
-    int valuesRow = row % View.rows;
-    int valuesCol = col % View.cols;
 
     Object val = f(m.get("sliderValue"));
-    String label = m.get("label").toString();
+    String label = m.get("label").toString(), txt = "";
+    float val2 = 0.001f, min = 0, max = 1;
 
-    String txt;
-    float val2 = 0;
-    float min = 0;
-    float max = 1;
-
+    //  Compute the min max.
     if (val instanceof Float) {
       val2 = (float) val;
       txt = String.format("%s   %.2f", label, val2);
+      if (row == 0) {
+        colMin[col] = val2;
+        colMax[col] = val2;
+      }
+      min = Math.min(colMin[col], val2);
+      max = Math.max(colMax[col], val2);
     }
     else txt = String.format("%s   %s", label, val);
+    //  Save into the values array.
+    values[row % valuesRows][col] = val2;
+    colMin[col] = min;
+    colMax[col] = max;
 
     int left = (int) (col * (sliderWidth * 1.1));
     sliderList.fill(150);
@@ -211,6 +220,10 @@ class SliderList extends Controller<SliderList> {
   Map<String, Object> getItem(int row, int col) {
     String key = "" + row + "|" + col;
     return items2.get(key);
+  }
+
+  float getValue(int row, int col) {
+    return values[row % valuesRows][col];
   }
 
   private int getIndex() {
