@@ -59,12 +59,10 @@ class View {
   // a convenience function to build a map that contains our key-value
   // pairs which we will then use to render each item of the SilderList.
   //
-  private Map<String, Object> makeItem(String theLabel, Object theValue, float theMin, float theMax) {
+  private Map<String, Object> makeItem(String theLabel, Object theValue) {
     HashMap<String, Object> m = new HashMap<>();
     m.put("label", theLabel);
     m.put("sliderValue", theValue);
-    m.put("sliderValueMin", theMin);
-    m.put("sliderValueMax", theMax);
     return m;
   }
 

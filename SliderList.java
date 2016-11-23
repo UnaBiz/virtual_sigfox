@@ -121,14 +121,17 @@ class SliderList extends Controller<SliderList> {
     //  Render the cell at (row,col).
     Map m = getItem(row, col);
     if (m == null) return;
+    int valuesRow = row % View.rows;
+    int valuesCol = col % View.cols;
 
-    float min = f(m.get("sliderValueMin"));
-    float max = f(m.get("sliderValueMax"));
     Object val = f(m.get("sliderValue"));
     String label = m.get("label").toString();
 
     String txt;
     float val2 = 0;
+    float min = 0;
+    float max = 1;
+
     if (val instanceof Float) {
       val2 = (float) val;
       txt = String.format("%s   %.2f", label, val2);
