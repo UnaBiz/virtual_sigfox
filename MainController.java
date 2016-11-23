@@ -106,6 +106,9 @@ class MainController {
     //  Send a message to UnaCloud or AWS to emulate a device message.
     String json = "{\"device\": \"" + device + "\", \"data\": \"" + data + "\"}";
     PApplet.println(prefix + "Emulating SIGFOX message:" + json + "...");
+    //  Decode the fields in the message.
+    System.out.print(prefix);
+    HashMap<String, Object> fields = Message.decodeMessage(data);
     for (String url: virtual_sigfox.emulateServerURLs) {
       //  For each emulate server URL, send the device and data.
       JSONRequest post = new JSONRequest(url);
@@ -114,8 +117,6 @@ class MainController {
       post.send();
       PApplet.println(prefix + "Emulate server response:" + post.getContent());
     }
-    //  Decode the fields in the message.
-    HashMap<String, Object> fields = Message.decodeMessage(data);
     //  Display the fields.
     virtual_sigfox.view.addRow(fields);
   }
@@ -158,7 +159,7 @@ class MainController {
     }
   }
 
-  private static String prefix = " > ";
+  public static final String prefix = " > ";
 
   static final String[] testInput = {
       "Running setup...",
