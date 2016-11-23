@@ -32,7 +32,7 @@ class MainController {
     //  Exclude Bluetooth ports on Mac.
     serialPortsFiltered = new ArrayList<>();
     for (String port: serialPorts) {
-      //if (!virtual_sigfox.testMode && port.toLowerCase().contains("bluetooth")) continue;
+      if (!virtual_sigfox.testMode && port.toLowerCase().contains("bluetooth")) continue;
       serialPortsFiltered.add(port);
     }
     PApplet.println(prefix + "Found COM / serial ports: ");

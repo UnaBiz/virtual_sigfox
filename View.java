@@ -59,15 +59,16 @@ class View {
         .setColorValue(0x000000)
     ;
 
-    connectButton = cp5.addButton("connect")
-        .setLabel("Connect")
-        .setPosition(sliderLeft + 2 * sliderWidth / 3,sliderTop - selectHeight)
-        .setSize(sliderWidth / 3,selectHeight)
-    ;
+    if (ports.size() > 0)
+      connectButton = cp5.addButton("connect")
+          .setLabel("Connect")
+          .setPosition(sliderLeft + 2 * sliderWidth / 3,sliderTop - selectHeight)
+          .setSize(sliderWidth / 3,selectHeight)
+      ;
 
     selectPort = cp5.addScrollableList("selectPort")
         .setType(ScrollableList.DROPDOWN) // currently supported DROPDOWN and LIST
-        .setLabel("Select the Arduino port")
+        .setLabel("Connect Arduino to USB, restart this app")
         .setPosition(sliderLeft,sliderTop - selectHeight)
         .setSize(2 * sliderWidth / 3, selectHeight * Math.min(ports.size() + 1, 5))
         .setBarHeight(selectHeight)
