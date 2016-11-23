@@ -10,7 +10,7 @@ import java.util.Map;
 class View {
 
   static final int dataCols = 3;  //  Number of data columns.
-  static final int displayRows = 4, displayCols = 9, width = 40, height = 20;  //  Grid display.
+  static final int displayRows = 10, displayCols = 9, width = 40, height = 20;  //  Grid display.
   static final int colGroups = displayCols / dataCols;  //  How many groups of columns.
   static final int sliderWidth = 250, sliderHeight = 350, sliderLeft = 40, sliderTop = 20;
   static final int[][] columnColors = {
@@ -44,20 +44,13 @@ class View {
 
   void addRow(HashMap<String, Object> fields) {
     //  Add an item: sliderList.addRow(makeItem("slider-"+i, 0, -PI, PI ));
-    String prefix = String.valueOf(row + 1) + ": ";
     int col = 0;
     for (String key: fields.keySet()) {
       Object val = fields.get(key);
-      Map<String, Object> item;
-      if (val instanceof Float) {
-        item = makeItem(prefix + key, val);
-      } else {
-        item = makeItem(prefix + key, val);
-      }
+      Map<String, Object> item = makeItem(key, val);
       dataColNames[col] = key;
       sliderList.addItem(row, col, item);
       col++;
-      prefix = "";
     }
     row++;
   }
