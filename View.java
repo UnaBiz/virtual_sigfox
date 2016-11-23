@@ -37,7 +37,7 @@ class View {
   }
 
   void settings() { //  Will be called only once.
-    applet.size(800, 400, PConstants.P3D);
+    applet.size(800, 400, PConstants.P2D);
     applet.smooth(4);
   }
 
