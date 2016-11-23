@@ -54,7 +54,7 @@ class MainController {
     //  to the debug output of the Arduino.
     if (virtual_sigfox.testMode) {  //  Test mode with simulated input.
       if (lineCount >= testInput.length) return;
-      if (System.currentTimeMillis() - lastRead < 200) return;
+      if (System.currentTimeMillis() - lastRead < 100) return;
       line = testInput[lineCount] + '\n';
     }
     else if (arduinoPort.available() > 0) {  // If data is available,

@@ -30,87 +30,87 @@ class SliderList extends Controller<SliderList> {
   private int rowCount = 0, colCount = 0;  //  Number of rows and cols.
 
   private HashMap<String, Map<String, Object>> items2 = new HashMap<>();
-  private PGraphics menu;
-  private boolean updateMenu;
+  private PGraphics sliderList;
+  private boolean updateDisplay;
 
   SliderList(PApplet applet, ControlP5 c, String theName, int theWidth, int theHeight) {
     super(c, theName, 0, 0, theWidth, theHeight);
     f1 = applet.createFont("Helvetica", 12);
     c.register(this);
-    menu = applet.createGraphics(getWidth(), getHeight());
+    sliderList = applet.createGraphics(getWidth(), getHeight());
 
     setView(new ControllerView<SliderList>() {
 
       public void display(PGraphics pg, SliderList t) {
-        if (updateMenu) {
-          updateMenu();
+        if (updateDisplay) {
+          refreshDisplay();
         }
         if (inside()) { // draw scrollbar
-          menu.beginDraw();
+          sliderList.beginDraw();
           int len = -(itemHeight * rowCount) + getHeight();
           int ty = (int) (PApplet.map(pos, len, 0, getHeight() - scrollerLength - 2, 2));
-          menu.fill(128);
-          menu.rect(getWidth() - 6, ty, 4, scrollerLength);
-          menu.endDraw();
+          sliderList.fill(128);
+          sliderList.rect(getWidth() - 6, ty, 4, scrollerLength);
+          sliderList.endDraw();
         }
-        pg.image(menu, 0, 0);
+        pg.image(sliderList, 0, 0);
       }
     });
-    updateMenu();
+    refreshDisplay();
   }
 
   // only update the image buffer when necessary - to save some resources
-  private void updateMenu() {
+  private void refreshDisplay() {
     int len = -(itemHeight * rowCount) + getHeight();
     npos = PApplet.constrain(npos, len, 0);
     pos += (npos - pos) * 0.1;
 
     /// draw the SliderList
-    menu.beginDraw();
-    menu.noStroke();
-    menu.background(240);
-    menu.textFont(cp5.getFont().getFont());
-    menu.pushMatrix();
-    menu.translate(0, (int) (pos));
-    menu.pushMatrix();
+    sliderList.beginDraw();
+    sliderList.noStroke();
+    sliderList.background(240);
+    sliderList.textFont(cp5.getFont().getFont());
+    sliderList.pushMatrix();
+    sliderList.translate(0, (int) (pos));
+    sliderList.pushMatrix();
 
-    if (rowCount > 0) renderMenu();
-    menu.popMatrix();
-    menu.popMatrix();
-    menu.endDraw();
+    if (rowCount > 0) render();
+    sliderList.popMatrix();
+    sliderList.popMatrix();
+    sliderList.endDraw();
     if (rowCount == 0) {
-      updateMenu = false;
+      updateDisplay = false;
     } else {
       if (itemHeight * rowCount < getHeight()) npos = 0;
-      updateMenu = PApplet.abs(npos - pos) > 0.01;
+      updateDisplay = PApplet.abs(npos - pos) > 0.01;
     }
   }
 
-  private void renderMenu() {
-    //  Render each row of the menu.
+  private void render() {
+    //  Render each row of the sliderList.
     int i0 = PApplet.max(0, (int) (PApplet.map(-pos, 0, itemHeight * rowCount,
         0, rowCount)));
     int range = PApplet.ceil(((float) (getHeight()) / (float) (itemHeight)) + 1);
     int i1 = PApplet.min(rowCount, i0 + range);
-    menu.translate(0, i0 * itemHeight);
+    sliderList.translate(0, i0 * itemHeight);
     for (int i = i0; i < i1; i++) {
       renderRow(i);
     }
   }
 
   private void renderRow(int row) {
-    //  Render one row of the menu.
-    menu.noStroke();
-    menu.fill(200);
-    menu.rect(0, itemHeight - 1, getWidth(), 1);
+    //  Render one row of the sliderList.
+    sliderList.noStroke();
+    sliderList.fill(200);
+    sliderList.rect(0, itemHeight - 1, getWidth(), 1);
     // uncomment the following line to use a different font than the default controlP5 font
-    menu.textFont(f1);
+    sliderList.textFont(f1);
 
     for (int col = 0; col < 4; col++) {
       //  Render each column.
       renderCell(row, col);
     }
-    menu.translate(0, itemHeight);
+    sliderList.translate(0, itemHeight);
   }
 
   private void renderCell(int row, int col) {
@@ -121,7 +121,7 @@ class SliderList extends Controller<SliderList> {
     float min = f(m.get("sliderValueMin"));
     float max = f(m.get("sliderValueMax"));
     Object val = f(m.get("sliderValue"));
-    String label = m.get("label").toString().toUpperCase();
+    String label = m.get("label").toString();
 
     String txt;
     float val2 = 0;
@@ -132,12 +132,13 @@ class SliderList extends Controller<SliderList> {
     else txt = String.format("%s   %s", label, val);
 
     int left = (int) (col * (sliderWidth * 1.1));
-    menu.fill(150);
-    menu.text(txt, left + 10, 20);
-    menu.fill(255);
-    menu.rect(left + sliderX, sliderY, sliderWidth, sliderHeight);
-    menu.fill(100, 230, 128);
-    menu.rect(left + sliderX, sliderY, PApplet.map(val2, min, max, 0, sliderWidth), sliderHeight);
+    sliderList.fill(150);
+    sliderList.text(txt, left + 10, 20);
+    sliderList.fill(255);
+    sliderList.rect(left + sliderX, sliderY, sliderWidth, sliderHeight);
+    sliderList.fill(View.columnColors[col][0], View.columnColors[col][1], View.columnColors[col][2]);
+    sliderList.rect(left + sliderX, sliderY, PApplet.map(val2, min, max, 0, sliderWidth),
+        sliderHeight);
   }
 
   // when detecting a click, check if the click happened to the far right,
@@ -146,7 +147,7 @@ class SliderList extends Controller<SliderList> {
   public void onClick() {
     if (getPointer().x() > getWidth() - 10) {
       npos = -PApplet.map(getPointer().y(), 0, getHeight(), 0, rowCount * itemHeight);
-      updateMenu = true;
+      updateDisplay = true;
     }
   }
 
@@ -165,14 +166,14 @@ class SliderList extends Controller<SliderList> {
       setValue(dragIndex);
       */
     }
-    updateMenu = true;
+    updateDisplay = true;
   }
 
   public void onDrag() {
     switch (dragMode) {
       case (1): // drag and scroll the list
         npos += getPointer().dy() * 2;
-        updateMenu = true;
+        updateDisplay = true;
         break;
       case (2): // drag slider
         /*  TODO
@@ -181,7 +182,7 @@ class SliderList extends Controller<SliderList> {
         float val = PApplet.constrain(PApplet.map(getPointer().x() - sliderX, 0, sliderWidth, min, max), min, max);
         items.get(dragIndex).put("sliderValue", val);
         setValue(dragIndex);
-        updateMenu = true;
+        updateDisplay = true;
         */
         break;
     }
@@ -189,7 +190,7 @@ class SliderList extends Controller<SliderList> {
 
   public void onScroll(int n) {
     npos += (n * 4);
-    updateMenu = true;
+    updateDisplay = true;
   }
 
   void addItem(int row, int col, Map<String, Object> item) {
@@ -197,7 +198,7 @@ class SliderList extends Controller<SliderList> {
     colCount = Math.max(colCount, col + 1);
     String key = "" + row + "|" + col;
     items2.put(key, item);
-    updateMenu = true;
+    updateDisplay = true;
   }
 
   Map<String, Object> getItem(int row, int col) {

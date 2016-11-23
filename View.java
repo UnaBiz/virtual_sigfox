@@ -2,7 +2,6 @@ import controlP5.ControlEvent;
 import controlP5.ControlP5;
 import processing.core.PApplet;
 import processing.core.PConstants;
-import processing.core.PFont;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,10 +9,15 @@ import java.util.Map;
 class View {
 
   private ControlP5 cp5;
-
-  private int NUM = 100;
-  private float[] rotation = new float[NUM];
-  private SliderList m = null;
+  static final int rows = 10, cols = 9, width = 40, height = 20, dataCols = 3;  //  Number of data columns.
+  static final int sliderWidth = 250, sliderHeight = 350, sliderLeft = 40, sliderTop = 20;
+  static final int[][] columnColors = {
+      {0, 128, 255},
+      {255, 0, 128},
+      {128, 200, 0}
+  };
+  private float[] matrix = new float[rows * cols];
+  private SliderList sliderList = null;
   private PApplet applet = null;
 
   View(PApplet applet0) {  //  Construct the view.
@@ -28,14 +32,14 @@ class View {
     cp5 = new ControlP5(applet);
     // create a custom SilderList with name menu, notice that function
     // menu will be called when a menu item has been clicked.
-    m = new SliderList(applet, cp5, "menu", 250, 350);
-    m.setPosition(40, 20);
+    sliderList = new SliderList(applet, cp5, "sliderList", sliderWidth, sliderHeight);
+    sliderList.setPosition(sliderLeft, sliderTop);
   }
 
   private int row = 0;
 
   void addRow(HashMap<String, Object> fields) {
-    //  Add an item: m.addRow(makeItem("slider-"+i, 0, -PI, PI ));
+    //  Add an item: sliderList.addRow(makeItem("slider-"+i, 0, -PI, PI ));
     String prefix = String.valueOf(row + 1) + ": ";
     int col = 0;
     for (String key: fields.keySet()) {
@@ -46,7 +50,7 @@ class View {
       } else {
         item = makeItem(prefix + key, val, 0, 1);
       }
-      m.addItem(row, col, item);
+      sliderList.addItem(row, col, item);
       col++;
       prefix = "";
     }
@@ -67,15 +71,20 @@ class View {
 
   void draw() {
     applet.background(220);
-    applet.fill(0, 128, 255);
     applet.noStroke();
     applet.pushMatrix();
-    applet.translate(applet.width / 2, 30);
-    for (int i = 0; i < NUM; i++) {
+    applet.translate(sliderWidth + sliderLeft + 20, sliderTop);
+    for (int i = 0; i < rows * cols; i++) {
       applet.pushMatrix();
-      applet.translate((i % 10) * 35, (i / 10) * 35);
-      applet.rotate(rotation[i]);
-      applet.rect(0, 0, 20, 20);
+      int col = i % cols;
+      int dataCol = col % dataCols;
+      float x = col * width * (float) 1.2;
+      float y = ((i / cols) + 1) * height * (float) 1.2;
+      applet.translate(x, y);
+      applet.fill(200, 200, 200);
+      applet.rect(0, 0, width, height);
+      applet.fill(columnColors[dataCol][0], columnColors[dataCol][1], columnColors[dataCol][2]);
+      applet.rect(0, 0, (int) (width * 0.5), height);
       applet.popMatrix();
     }
     applet.popMatrix();
@@ -87,9 +96,9 @@ class View {
     /* TODO
     if (theEvent.isFrom("menu")) {
       int index = (int) theEvent.getValue();
-      Map m = ((SliderList) theEvent.getController()).getItem(index);
-      PApplet.println("got a slider event from item : " + m);
-      rotation[index] = f(m.get("sliderValue"));
+      Map sliderList = ((SliderList) theEvent.getController()).getItem(index);
+      PApplet.println("got a slider event from item : " + sliderList);
+      rotation[index] = f(sliderList.get("sliderValue"));
     }
     */
   }
