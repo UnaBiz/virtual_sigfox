@@ -23,6 +23,7 @@ class View {
   private PFont font;
   private SliderList sliderList = null;
   private PApplet applet = null;
+  private String[] dataColNames = new String[dataCols];
 
   View(PApplet applet0) {  //  Construct the view.
     applet = applet0;
@@ -53,6 +54,7 @@ class View {
       } else {
         item = makeItem(prefix + key, val);
       }
+      dataColNames[col] = key;
       sliderList.addItem(row, col, item);
       col++;
       prefix = "";
@@ -98,6 +100,10 @@ class View {
         applet.rect(0, 0, (int) (width * normalisedVal), height);
         applet.fill(0);
         applet.text("" + val, 5, 15);
+        if (displayRow == 0) {
+          //  Show column headers.
+          applet.text(dataColNames[col] + "[" + row + "]", 5, -10);
+        }
         applet.popMatrix();
       }
     }

@@ -215,6 +215,35 @@ class SliderList extends Controller<SliderList> {
     String key = "" + row + "|" + col;
     items2.put(key, item);
     updateDisplay = true;
+
+    Object val = f(item.get("sliderValue"));
+    float val2 = 0.001f, min = 0, max = 1;
+
+    //  Compute the min max.
+    if (val instanceof Float) {
+      val2 = (float) val;
+      //  txt = String.format("%s   %.2f", label, val2);
+      if (row == 0) {
+        colMin[col] = val2;
+        colMax[col] = val2;
+      }
+      min = Math.min(colMin[col], val2);
+      max = Math.max(colMax[col], val2);
+    }
+    //  else txt = String.format("%s   %s", label, val);
+    //  Save into the values array.
+    values[row % valuesRows][col] = val2;
+    colMin[col] = min;
+    colMax[col] = max;
+
+
+
+    // render();
+
+    //  TODO: Compare with previous min-max.  If changed, update the min-max for each row.
+    //for (int r = 0; r < row; r++) {
+      //renderCell(r, col);
+    //}
   }
 
   Map<String, Object> getItem(int row, int col) {
